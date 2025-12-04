@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PROTOCOL 03 // THE HANDLE</title>
+    <meta name="description"
+        content="Protocol 03: The Handle. The machine generates infinity. You generate the agency.">
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="03 // THE HANDLE">
+    <meta property="og:description" content="Protocol 03. The machine generates infinity. You generate the agency.">
+    <meta property="og:image" content="https://handle.averylakeofficial.com/preview.jpg">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://handle.averylakeofficial.com/preview.jpg">
+    <meta property="og:url" content="https://handle.averylakeofficial.com/">
+
+    <!-- Favicon -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%23ffff00'/></svg>">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- 1. CORE DESIGN SYSTEM --- */
+        :root {
+            --bg-void: #0a0a0a;
+            --bg-light: #f0f0f0;
+            --text-main: #ffffff;
+            --cyan: #00ffff;
+            --magenta: #ff00ff;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.15);
+            --font: 'Space Grotesk', sans-serif;
+            --font-mono: 'Courier Prime', monospace;
+
+            /* Logic Variables */
+            --active-color: #FFFF00;
+            /* Yellow */
+            --door-base: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-void);
+            color: var(--text-main);
+            font-family: var(--font);
+            margin: 0;
+            height: 100svh;
+            min-height: 100svh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- THE MONOLITH --- */
+        .monolith-frame {
+            width: 280px;
+            height: 520px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0 40px rgba(255, 255, 0, 0.2);
+            /* Base glow */
+            z-index: 10;
+            margin-bottom: 25px;
+
+            /* Border follows mode (not door) */
+            --frame-border: var(--border);
+            border-color: var(--frame-border);
+        }
+
+        .monolith-frame.inverted {
+            --frame-border: rgba(0, 0, 0, 0.15);
+        }
+
+        .monolith-frame.success {
+            border-color: var(--active-color);
+            box-shadow: 0 0 40px var(--active-color);
+        }
+
+        /* HEADER */
+        .header {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            background: var(--bg-void);
+            z-index: 25;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title h1 {
+            font-size: 12px;
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .header-title h2 {
+            font-size: 9px;
+            margin: 2px 0 0 0;
+            opacity: 0.6;
+        }
+
+        .audio-toggle {
+            font-size: 9px;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            padding: 4px 6px;
+            transition: all 0.3s;
+        }
+
+        .audio-toggle:hover {
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+
+        /* GAME AREA */
+        .game-area {
+            flex-grow: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+            overflow: hidden;
+            background-color: var(--bg-void);
+            transition: background-color 0.5s ease;
+        }
+
+        /* INVERTED MODE */
+        .game-area.inverted {
+            background-color: var(--bg-light);
+        }
+
+        .game-area.inverted .door {
+            border-color: rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        /* GRID (9:16 Ratios) */
+        #grid {
+            display: grid;
+            grid-template-columns: repeat(11, 1fr);
+            grid-template-rows: repeat(10, 1fr);
+            gap: 3px;
+            width: 242px;
+            height: 387px;
+            transform-style: preserve-3d;
+            transition: transform 1.2s cubic-bezier(0.25, 0.1, 0.25, 1.0);
+        }
+
+        .door {
+            background: var(--door-base);
+            border: 1px solid transparent;
+            width: 100%;
+            height: 100%;
+            transition: background 0.2s;
+        }
+
+        .door.chosen {
+            border: 1px solid var(--door-active);
+            box-shadow: 0 0 10px var(--door-active);
+            animation: pulse 1.5s infinite;
+            cursor: pointer;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+                box-shadow: 0 0 15px var(--door-active);
+            }
+        }
+
+        /* TRANSITIONS */
+        .curtain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 20;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease-out;
+        }
+
+        /* FOOTER (Internal) */
+        .internal-footer {
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 9px;
+            background: var(--bg-void);
+            z-index: 25;
+        }
+
+        /* EXTERNAL FOOTER */
+        .external-footer {
+            width: 300px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .external-footer div {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .right-align {
+            text-align: right;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--cyan);
+        }
+
+        .reset-link {
+            font-size: 9px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: color 0.3s;
+            border: none;
+            text-decoration: none;
+        }
+
+        .footer-left {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .credits {
+            font-size: 9px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.4);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .credits:hover {
+            color: #fff;
+        }
+
+        /* Continue CTA as button */
+        .cta-btn {
+            background: transparent;
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            font-family: var(--font);
+            font-size: 9px;
+            letter-spacing: 2px;
+            padding: 8px 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+
+        .cta-btn:hover {
+            background: var(--cyan);
+            color: #000;
+            box-shadow: 0 0 12px var(--cyan);
+        }
+
+        /* OVERLAYS */
+        .overlay-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .overlay-msg {
+            font-size: 11px;
+            line-height: 1.6;
+            color: #888;
+            margin-bottom: 20px;
+            max-width: 250px;
+        }
+
+        /* LAYOUT CONTAINERS */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            z-index: 50;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            pointer-events: none;
+            /* Let clicks pass through if needed, but buttons need events */
+        }
+
+        .top-bar>* {
+            pointer-events: auto;
+        }
+
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            z-index: 50;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            pointer-events: none;
+        }
+
+        .bottom-bar>* {
+            pointer-events: auto;
+        }
+
+        .protocol-title {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .protocol-subtitle {
+            font-size: 9px;
+            color: #888;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .audio-toggle {
+            font-size: 9px;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 12px;
+            transition: all 0.3s;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.4);
+            font-family: var(--font);
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .audio-toggle:hover {
+            border-color: var(--active-color);
+            color: var(--active-color);
+        }
+
+        .audio-toggle.active {
+            border-color: var(--active-color);
+            color: var(--active-color);
+        }
+
+        /* UNIFIED BUTTONS (Adapted for Protocol 03 Yellow) */
+        .btn-primary {
+            display: block;
+            width: 100%;
+            background: transparent;
+            border: 1px solid var(--active-color);
+            color: var(--active-color);
+            font-family: var(--font);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: left;
+        }
+
+        .btn-primary:hover {
+            background: rgba(255, 255, 0, 0.1);
+            box-shadow: 0 0 20px rgba(255, 255, 0, 0.2);
+            color: var(--active-color);
+        }
+
+        .btn-secondary {
+            display: block;
+            width: 100%;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.6);
+            font-family: var(--font);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: left;
+        }
+
+        .btn-secondary:hover {
+            border-color: #ffffff;
+            color: #ffffff;
+        }
+
+        .btn-locked {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .btn-locked.unlocked {
+            opacity: 1;
+            cursor: pointer;
+            pointer-events: auto;
+            border-color: var(--active-color);
+            color: var(--active-color);
+        }
+
+        .btn-locked.unlocked:hover {
+            background: rgba(255, 255, 0, 0.1);
+            box-shadow: 0 0 20px rgba(255, 255, 0, 0.2);
+        }
+
+        .capture-modal {
+            width: 320px;
+            text-align: center;
+            background: rgba(10, 10, 10, 0.95);
+            border: 1px solid var(--border);
+            /* Changed to subtle border */
+            padding: 0;
+            /* Reset padding to matching style if needed, but 00 uses modal style */
+            border: none;
+            /* 00 has no border on modal itself usually, let's check */
+        }
+
+        /* Actually 00 doesn't have modal bg in CSS shown, but #capture-overlay has bg. 
+           Let's stick to 00 styling: .capture-modal { width: 320px; text-align: center; } 
+           And #capture-overlay handles the backdrop. 
+           In 03 current CSS, .capture-modal has bg and border. I will remove strict frame to match 00 style better. */
+
+        .capture-header {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--active-color);
+            text-transform: uppercase;
+            margin-bottom: 30px;
+        }
+
+        .capture-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-family: var(--font);
+            font-size: 14px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 12px;
+            margin-bottom: 30px;
+            outline: none;
+        }
+
+        .capture-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .capture-input:focus {
+            border-color: var(--active-color);
+        }
+
+        .reset-link {
+            font-size: 9px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.4);
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.3s;
+            border-bottom: 1px solid #333;
+            padding-bottom: 2px;
+        }
+
+        .reset-link:hover {
+            color: #fff;
+        }
+
+        /* ARTIFACT UI */
+        .artifact-ui {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 1000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* --- MOBILE LAYOUT FIXES --- */
+        @media (max-width: 520px) {
+            body {
+                height: 100svh;
+                min-height: 100svh;
+                padding: 18px 0 90px;
+                /* room for fixed footer */
+            }
+
+            .monolith-frame {
+                margin-bottom: 0;
+            }
+
+            .external-footer {
+                position: fixed;
+                left: 50%;
+                bottom: 14px;
+                transform: translateX(-50%);
+                width: min(360px, calc(100vw - 28px));
+                margin-top: 0;
+                z-index: 30;
+            }
+        }
+
+        canvas {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <audio id="audio-engine" loop>
+        <source src="The Architecture of Choice.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="gatekeeper" class="overlay-layer" style="display:none;">
+        <div style="font-size:30px; color:var(--magenta); margin-bottom:10px;">⚠️</div>
+        <div class="overlay-msg">
+            RESTRICTED BROWSER DETECTED.<br>
+            PROTOCOL REQUIRES EXTERNAL ENGINE.<br><br>
+            PLEASE OPEN IN SAFARI OR CHROME.
+        </div>
+    </div>
+
+    <!-- UNIFIED START OVERLAY -->
+    <div id="init-layer" class="overlay-layer"
+        style="background-color: var(--bg-void); padding: 20px; transition: opacity 0.5s ease; z-index: 10000;">
+        <div style="font-size:24px; font-weight:700; letter-spacing:6px; margin-bottom:8px;">THE HANDLE</div>
+        <div
+            style="font-size:11px; font-weight:300; letter-spacing:3px; color:rgba(255,255,255,0.4); margin-bottom:8px;">
+            by</div>
+        <div style="font-size:14px; letter-spacing:4px; margin-bottom:50px;">AVERY LAKE</div>
+        <button class="btn-main" onclick="initializeProtocol()"
+            style="width:auto; padding:18px 50px; font-size:12px; letter-spacing:4px; max-width:300px; background:transparent; border:1px solid var(--active-color); color:var(--active-color); font-family:var(--font); font-weight:700; cursor:pointer; transition:all 0.3s;">INITIALIZE</button>
+        <div style="font-size:10px; letter-spacing:2px; color:rgba(255,255,255,0.4); margin-top:30px;">(Turn on sound
+            for full effect)</div>
+    </div>
+
+    <!-- MAIN INTERFACE WRAPPER -->
+    <div id="main-interface"
+        style="opacity:0; transition: opacity 1s ease; display:flex; flex-direction:column; align-items:center; width:100%;">
+
+
+        <!-- TOP BAR (External) -->
+        <div class="top-bar">
+            <div>
+                <div class="protocol-title">The Handle</div>
+                <div class="protocol-subtitle">Protocol 03</div>
+            </div>
+            <button class="audio-toggle" id="audio-btn" onclick="toggleAudio()">AUDIO: OFF</button>
+        </div>
+
+        <div class="monolith-frame" id="frame">
+            <!-- FRAME CONTENTS -->
+            <div style="position:absolute; top:15px; right:15px; font-size:10px; font-weight:700; color:var(--text-main); letter-spacing:2px; z-index:20;"
+                id="depth-display">DEPTH: 00</div>
+
+            <div class="game-area" id="game-area">
+                <div id="grid"></div>
+                <div class="curtain" id="curtain"></div>
+            </div>
+
+            <!-- Internal Footer Removed -->
+        </div>
+
+        <!-- BOTTOM BAR (External) -->
+        <div class="bottom-bar">
+            <div class="footer-left">
+                <span class="reset-link" onclick="location.reload()">RESET PROTOCOL</span>
+                <a href="https://www.averylakeofficial.com/" target="_blank" class="credits">AN ART OF AVERY LAKE
+                    EXPERIMENT</a>
+                <span style="font-size: 7px; opacity: 0.5;">© 2026 Avery Lake. All rights reserved.</span>
+                <a href="https://averylakeofficial.com/the-signal" target="_blank"
+                    style="opacity:0.4; font-size:8px; cursor: pointer; text-decoration: none; color: inherit;">Audio:
+                    The Architecture of Choice by AVERY LAKE</a>
+            </div>
+            <a class="btn-secondary" href="https://digital.averylakeofficial.com/"
+                style="width:auto; padding:12px 20px; text-decoration:none;">
+                CONTINUE THE AUDIT
+            </a>
+        </div>
+
+    </div> <!-- End Main Interface -->
+
+    <!-- DATA CAPTURE OVERLAY -->
+    <div id="endgame-ui" class="artifact-ui">
+        <div class="capture-modal">
+            <div class="capture-header">DATA CAPTURED</div>
+
+            <input type="text" class="capture-input" id="subject-name" placeholder="ENTER SUBJECT NAME" maxlength="25">
+
+            <button class="btn-primary" onclick="downloadArtifact()">
+                <span style="opacity:0.5; margin-right:8px;">1.</span> DOWNLOAD ARTIFACT (IMAGE)
+            </button>
+            <button class="btn-secondary" onclick="downloadDataLog()">
+                <span style="opacity:0.5; margin-right:8px;">2.</span> DOWNLOAD DATA LOG
+            </button>
+            <button class="btn-secondary btn-locked" id="print-btn" onclick="requestPrint()" style="opacity:0.3;">
+                <span style="opacity:0.5; margin-right:8px;">3.</span> COMMISSION INQUIRY (optional)
+            </button>
+
+            <div style="height:10px;"></div>
+
+            <a href="https://digital.averylakeofficial.com/" class="btn-secondary">
+                <span style="opacity:0.5; margin-right:8px;">4.</span> CONTINUE THE AUDIT
+            </a>
+
+            <div style="margin-top:15px; text-align:center;">
+                <span class="reset-link" onclick="location.reload()" style="font-size:9px; padding-bottom:2px;">RESET
+                    PROTOCOL</span>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="canvas-artifact"></canvas>
+    <canvas id="canvas-certificate"></canvas>
+
+    <script>
+        // --- CONFIGURATION ---
+        const CONFIG = {
+            // Replaced final color #FFFFFF with #FF3333 so the 10th step is visible on light backgrounds
+            colors: ['#FFFF00', '#00FFFF', '#FF00FF', '#00FF00', '#FF4500', '#1E90FF', '#FF1493', '#7FFF00', '#FFD700', '#FF3333'],
+            email: "hello@averylakeofficial.com",
+            cols: 11,
+            rows: 10
+        };
+
+        // --- STATE ---
+        let state = {
+            depth: 0,
+            path: [],
+            target: { r: 0, c: 0 },
+            inverted: false,
+            moving: false,
+            downloads: { artifact: false, cert: false },
+            data: {} /* Store generated data here */
+        };
+
+        // --- DOM ELEMENTS ---
+        const els = {
+            frame: document.getElementById('frame'),
+            grid: document.getElementById('grid'),
+            curtain: document.getElementById('curtain'),
+            gameArea: document.getElementById('game-area'),
+            audio: document.getElementById('audio-engine'),
+            depth: document.getElementById('depth-display')
+        };
+
+        // --- 1. GATEKEEPER ---
+        if (/Instagram|FBAN|FBAV|TikTok/.test(navigator.userAgent)) {
+            document.getElementById('gatekeeper').style.display = 'flex';
+        }
+
+        // --- 2. INITIALIZATION ---
+        function initializeProtocol() {
+            // Fade out overlay
+            const ol = document.getElementById('init-layer');
+            ol.style.opacity = '0';
+            setTimeout(() => ol.style.display = 'none', 500);
+
+            // Fade in main interface
+            document.getElementById('main-interface').style.opacity = '1';
+
+            // Audio
+            els.audio.volume = 0.5;
+            els.audio.play().catch(console.error);
+            resetLevel();
+        }
+
+        function toggleAudio() {
+            const btn = document.getElementById('audio-btn');
+            if (els.audio.paused) {
+                els.audio.play();
+                btn.textContent = "AUDIO: ON";
+                btn.style.borderColor = 'var(--active-color)';
+                btn.style.color = 'var(--active-color)';
+            } else {
+                els.audio.pause();
+                btn.textContent = "AUDIO: OFF";
+                btn.style.borderColor = 'var(--border)';
+                btn.style.color = 'inherit';
+            }
+        }
+
+        // --- 3. GAME LOGIC ---
+        function resetLevel() {
+            // Keep generating random positions until we find one not already used
+            let attempts = 0;
+            do {
+                state.target.r = Math.floor(Math.random() * CONFIG.rows) + 1;
+                state.target.c = Math.floor(Math.random() * CONFIG.cols) + 1;
+                attempts++;
+                // Safety check to prevent infinite loop (though very unlikely)
+                if (attempts > 1000) break;
+            } while (state.path.some(p => p.r === state.target.r && p.c === state.target.c));
+
+            renderGrid();
+        }
+
+        function getCurrentColor() { return CONFIG.colors[state.depth % CONFIG.colors.length]; }
+
+        function renderGrid() {
+            els.grid.innerHTML = '';
+            const activeColor = getCurrentColor();
+            document.documentElement.style.setProperty('--door-active', activeColor);
+
+            for (let r = 1; r <= CONFIG.rows; r++) {
+                for (let c = 1; c <= CONFIG.cols; c++) {
+                    const door = document.createElement('div');
+                    door.className = 'door';
+                    if (r === state.target.r && c === state.target.c) {
+                        door.classList.add('chosen');
+                        door.onclick = () => handleStep(activeColor);
+                    }
+                    els.grid.appendChild(door);
+                }
+            }
+        }
+
+        function handleStep(color) {
+            if (state.moving) return;
+            state.moving = true;
+
+            // Visual Transition
+            els.grid.style.transform = 'scale(3)';
+            els.curtain.style.background = color;
+            els.curtain.style.opacity = '1';
+
+            // Wait for transition
+            setTimeout(() => {
+                // Background Swap
+                state.inverted = !state.inverted;
+
+                if (state.inverted) {
+                    els.gameArea.classList.add('inverted');
+                    els.frame.classList.add('inverted');
+                } else {
+                    els.gameArea.classList.remove('inverted');
+                    els.frame.classList.remove('inverted');
+                }
+
+                els.grid.style.transform = 'scale(1)';
+                els.grid.style.transition = 'none'; // Instant reset
+
+                state.depth++;
+
+                // Record Path AFTER depth increment
+                state.path.push({ r: state.target.r, c: state.target.c, color: color });
+
+                // WIN CONDITION (10 clicks = depth 10)
+                if (state.depth > 9) {
+                    els.depth.innerText = `DEPTH: 10`;
+                    // No artificial delay, finish immediately
+                    els.frame.classList.add('success');
+                    document.getElementById('endgame-ui').style.display = 'flex';
+                    return;
+                }
+
+                els.depth.innerText = `DEPTH: 0${state.depth}`;
+                resetLevel();
+
+                setTimeout(() => {
+                    els.grid.style.transition = 'transform 1.2s cubic-bezier(0.25, 0.1, 0.25, 1.0)';
+                }, 50);
+
+            }, 600);
+
+            setTimeout(() => {
+                els.curtain.style.opacity = '0';
+                state.moving = false;
+            }, 900);
+        }
+
+        // --- 4. DATA GENERATION & DOWNLOADS ---
+        function ensureData() {
+            if (state.data.hash) return;
+
+            const name = document.getElementById('subject-name').value.toUpperCase().trim() || "ANONYMOUS";
+            const time = new Date().toISOString().replace('T', ' ').slice(0, 19);
+            const hash = "0x" + Math.random().toString(16).substr(2, 8).toUpperCase();
+            const trajectory = state.path.map(p => `${p.r}.${p.c}`).join('-');
+
+            state.data = { name, time, loc: "LOCAL TERMINAL", hash, traj: trajectory };
+
+            // Draw the artifact canvas now that we have data
+            drawArtifact(name, hash);
+        }
+
+        function downloadArtifact() {
+            ensureData();
+
+            const link = document.createElement('a');
+            link.download = `THE_HANDLE_ARTIFACT_${state.data.hash}.png`;
+            // Use the canvas directly
+            link.href = document.getElementById('canvas-artifact').toDataURL("image/png");
+            link.click();
+
+            state.downloads.artifact = true;
+            checkUnlock();
+        }
+
+        function drawArtifact(name, hash) {
+            const ctx = document.getElementById('canvas-artifact').getContext('2d');
+            // High Res: 2250 x 3000 (18"x24" at ~125 DPI)
+            const W = 2250, H = 3000;
+            ctx.canvas.width = W; ctx.canvas.height = H;
+
+            // Base background
+            ctx.fillStyle = "#080808";
+            ctx.fillRect(0, 0, W, H);
+
+            // Textured background layers (yellow theme - ENHANCED)
+            // Yellow stripe 1 - NARROW BUT VISIBLE
+            const yellowGrad1 = ctx.createLinearGradient(0, 0, W, 0);
+            yellowGrad1.addColorStop(0, "transparent");
+            yellowGrad1.addColorStop(0.39, "transparent");
+            yellowGrad1.addColorStop(0.40, "rgba(255, 255, 0, 0.5)");
+            yellowGrad1.addColorStop(0.42, "rgba(255, 255, 0, 0.5)");
+            yellowGrad1.addColorStop(0.43, "transparent");
+            yellowGrad1.addColorStop(1, "transparent");
+            ctx.fillStyle = yellowGrad1;
+            ctx.fillRect(0, 0, W, H);
+
+            // Yellow stripe 2 - NARROW BUT VISIBLE
+            const yellowGrad2 = ctx.createLinearGradient(0, 0, W, 0);
+            yellowGrad2.addColorStop(0, "transparent");
+            yellowGrad2.addColorStop(0.59, "transparent");
+            yellowGrad2.addColorStop(0.60, "rgba(255, 255, 0, 0.5)");
+            yellowGrad2.addColorStop(0.62, "rgba(255, 255, 0, 0.5)");
+            yellowGrad2.addColorStop(0.63, "transparent");
+            yellowGrad2.addColorStop(1, "transparent");
+            ctx.fillStyle = yellowGrad2;
+            ctx.fillRect(0, 0, W, H);
+
+            // Static noise stripes
+            const staticGrad = ctx.createLinearGradient(0, 0, W, 0);
+            staticGrad.addColorStop(0, "transparent");
+            staticGrad.addColorStop(0.10, "transparent");
+            staticGrad.addColorStop(0.10, "rgba(255, 255, 255, 0.08)");
+            staticGrad.addColorStop(0.30, "rgba(255, 255, 255, 0.08)");
+            staticGrad.addColorStop(0.30, "transparent");
+            staticGrad.addColorStop(1, "transparent");
+            ctx.fillStyle = staticGrad;
+            for (let y = 20; y < H; y += 70) {
+                ctx.fillRect(0, y, W, 70);
+            }
+
+            // Scanlines - HIGHLY VISIBLE
+            ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+            for (let y = 0; y < H; y += 2) {
+                ctx.fillRect(0, y, W, 1);
+            }
+
+            // Vignette
+            const vignette = ctx.createRadialGradient(W / 2, H / 2, H * 0.25, W / 2, H / 2, H * 0.95);
+            vignette.addColorStop(0, "transparent");
+            vignette.addColorStop(1, "rgba(0, 0, 0, 0.95)");
+            ctx.fillStyle = vignette;
+            ctx.fillRect(0, 0, W, H);
+
+            // --- VISUAL GRID ---
+            // Calculate sizes to match 9:16 door ratio
+            // Cell Width = 135px. Cell Height = 240px (16:9 ratio).
+            // Grid Width = 135 * 11 = 1485px.
+            // Grid Height = 240 * 10 = 2400px.
+
+            const cellW = 135;
+            const cellH = 240;
+            const startX = (W - (cellW * 11)) / 2; // Center Horizontal
+            const startY = 300; // Top Margin
+
+            // FILL MONOLITH INTERIOR (blocks texture from showing inside)
+            const monoW = (cellW * 11) + 80;  // Grid width + border margins
+            const monoH = (cellH * 10) + 80;  // Grid height + border margins
+            ctx.fillStyle = "#000000";
+            ctx.fillRect(startX - 40, startY - 40, monoW, monoH);
+
+            // 1. Faint Grid Background (Visible Grid Logic)
+            ctx.fillStyle = "rgba(255,255,255,0.05)";
+            for (let r = 0; r < CONFIG.rows; r++) {
+                for (let c = 0; c < CONFIG.cols; c++) {
+                    ctx.fillRect(startX + (c * cellW) + 4, startY + (r * cellH) + 4, cellW - 8, cellH - 8);
+                }
+            }
+
+            // 2. Monolith Outline (Magenta)
+            ctx.strokeStyle = "#ffff00";
+            ctx.lineWidth = 6;
+            ctx.strokeRect(startX - 40, startY - 40, (cellW * 11) + 80, (cellH * 10) + 80);
+
+            // Corner brackets - Yellow + White alternating
+            const monoL = startX - 40;
+            const monoT = startY - 40;
+            const monoR = startX - 40 + (cellW * 11) + 80;
+            const monoB = startY - 40 + (cellH * 10) + 80;
+            const cornerSize = 60;
+            const cornerOffset = 45;
+            ctx.lineWidth = 6;
+
+            // Top-left - YELLOW
+            ctx.strokeStyle = "rgba(255, 255, 0, 0.9)";
+            ctx.beginPath();
+            ctx.moveTo(monoL - cornerOffset, monoT - cornerOffset + cornerSize);
+            ctx.lineTo(monoL - cornerOffset, monoT - cornerOffset);
+            ctx.lineTo(monoL - cornerOffset + cornerSize, monoT - cornerOffset);
+            ctx.stroke();
+
+            // Top-right - WHITE
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
+            ctx.beginPath();
+            ctx.moveTo(monoR + cornerOffset - cornerSize, monoT - cornerOffset);
+            ctx.lineTo(monoR + cornerOffset, monoT - cornerOffset);
+            ctx.lineTo(monoR + cornerOffset, monoT - cornerOffset + cornerSize);
+            ctx.stroke();
+
+            // Bottom-left - WHITE
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
+            ctx.beginPath();
+            ctx.moveTo(monoL - cornerOffset, monoB + cornerOffset - cornerSize);
+            ctx.lineTo(monoL - cornerOffset, monoB + cornerOffset);
+            ctx.lineTo(monoL - cornerOffset + cornerSize, monoB + cornerOffset);
+            ctx.stroke();
+
+            // Bottom-right - YELLOW
+            ctx.strokeStyle = "rgba(255, 255, 0, 0.9)";
+            ctx.beginPath();
+            ctx.moveTo(monoR + cornerOffset - cornerSize, monoB + cornerOffset);
+            ctx.lineTo(monoR + cornerOffset, monoB + cornerOffset);
+            ctx.lineTo(monoR + cornerOffset, monoB + cornerOffset - cornerSize);
+            ctx.stroke();
+
+            // 3. Draw Path
+            state.path.forEach(p => {
+                ctx.fillStyle = p.color;
+                ctx.shadowColor = p.color; ctx.shadowBlur = 40;
+                ctx.fillRect(startX + ((p.c - 1) * cellW) + 4, startY + ((p.r - 1) * cellH) + 4, cellW - 8, cellH - 8);
+                ctx.shadowBlur = 0;
+            });
+
+            // 4. Footer Text (Scaled Up) - Standardized to 150px from bottom
+            ctx.fillStyle = "#fff"; ctx.font = "600 40px 'Space Grotesk'";
+            ctx.textAlign = "left"; ctx.fillText(`${hash} (1/1)`, 150, 2850);
+            ctx.textAlign = "center"; ctx.fillText("THE HANDLE", W / 2, 2850);
+            ctx.textAlign = "right"; ctx.fillText("AVERY LAKE", W - 150, 2850);
+        }
+
+        // drawCertificate removed as we are using text log only
+
+        // --- 5. DOWNLOAD & INQUIRY SYSTEM ---
+        function downloadDataLog() {
+            ensureData();
+            const d = state.data;
+            const logContent = `═══════════════════════════════════════════
+        DIGITAL AUDIT // PROTOCOL 03
+═══════════════════════════════════════════
+
+SUBJECT ID............... ${d.name}
+TIMESTAMP................ ${d.time}
+LOCATION................. ${d.loc}
+UNIQUE HASH.............. ${d.hash}
+
+─────────────────────────────────────────────
+PROTOCOL SPECIFIC DATA:
+─────────────────────────────────────────────
+METRIC................... AGENCY / CHOICE
+TRAJECTORY............... ${d.traj}
+
+─────────────────────────────────────────────
+PHILOSOPHICAL NOTE
+─────────────────────────────────────────────
+A door is a signal. Or is it just geometry?
+
+You made ${state.depth} choices to reach the center.
+
+The architecture of autonomy:
+Even when the paths are already made,
+walking through them can be freedom.
+Freedom is found in the choice of opening the door.
+
+─────────────────────────────────────────────
+ARTIFACT STATUS:       VERIFIED
+─────────────────────────────────────────────
+
+AUDIO: "The Architecture of Choice" by AVERY LAKE
+© AVERY LAKE OFFICIAL // 2026
+THE DIGITAL AUDIT OF THE HUMAN CONDITION
+`;
+            const blob = new Blob([logContent], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.download = `HANDLE_DATA_LOG_${d.hash}.txt`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+            state.downloads.cert = true;
+            checkUnlock();
+        }
+
+        function checkUnlock() {
+            if (state.downloads.artifact && state.downloads.cert) {
+                const btn = document.getElementById('print-btn');
+                btn.classList.add('unlocked');
+                // Visual Light Up
+                btn.style.opacity = '1';
+                btn.style.borderColor = 'var(--active-color)';
+                btn.style.color = 'var(--active-color)';
+                btn.style.boxShadow = '0 0 20px rgba(255, 255, 0, 0.3)';
+
+                // Mark protocol as completed in localStorage
+                try {
+                    const progress = JSON.parse(localStorage.getItem('digitalAuditProgress') || '{}');
+                    progress.handle = { completed: true, timestamp: Date.now() };
+                    localStorage.setItem('digitalAuditProgress', JSON.stringify(progress));
+                } catch (e) { }
+            }
+        }
+
+        function requestPrint() {
+            if (!state.downloads.artifact || !state.downloads.cert) return;
+
+            const d = state.data;
+            const subject = `Protocol 03 Commission Request (${d.name})`;
+            const body = `Dear Avery Lake,
+
+I have completed Protocol 03: The Handle and would like to request a signed and certified physical copy.
+
+PROTOCOL DATA:
+- Subject: ${d.name}
+- Hash: ${d.hash}
+- Timestamp: ${d.time}
+- Trajectory: ${d.traj.substring(0, 50)}...
+
+[IMPORTANT: I have attached BOTH the ARTIFACT IMAGE and the DATA LOG to this email.]
+
+Please advise on commission details.
+
+TECHNICAL SPECIFICATIONS:
+- Size: 18″ × 24″ (recommended). Other sizes available upon request.`;
+
+            window.location.href = `mailto:${CONFIG.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        }
+
+    </script>
+
+
+
+    <script async id="netlify-rum-container" src="/.netlify/scripts/rum"
+        data-netlify-rum-site-id="a5f3ce00-d478-4154-871c-df7e0a1ed5f1" data-netlify-deploy-branch=""
+        data-netlify-deploy-context="production"
+        data-netlify-cwv-token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaXRlX2lkIjoiYTVmM2NlMDAtZDQ3OC00MTU0LTg3MWMtZGY3ZTBhMWVkNWYxIiwiYWNjb3VudF9pZCI6IjY5MzFlZWUwNDg2OGZlZmNhNzQ4OWZiYyIsImRlcGxveV9pZCI6IjY5NDc5MmNmNzI5YmU1NmIxYzhjMTYzMiIsImlzc3VlciI6Im5mc2VydmVyIn0.m8VLjn3kTUpLE84ospdXVZhiLBxbmYDwYdLojgdYOQU"></script>
+
+<script async id="netlify-rum-container" src="/.netlify/scripts/rum" data-netlify-rum-site-id="a5f3ce00-d478-4154-871c-df7e0a1ed5f1" data-netlify-deploy-branch="" data-netlify-deploy-context="production" data-netlify-cwv-token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaXRlX2lkIjoiYTVmM2NlMDAtZDQ3OC00MTU0LTg3MWMtZGY3ZTBhMWVkNWYxIiwiYWNjb3VudF9pZCI6IjY5MzFlZWUwNDg2OGZlZmNhNzQ4OWZiYyIsImRlcGxveV9pZCI6IjY5NTIyZjYwOTFmZGI4MDBhODdiYzdiNyIsImlzc3VlciI6Im5mc2VydmVyIn0.oDpZapUCUrKTxSmkKvd0CnzFx9ZuX06U2eJGtZsmWhg"></script>
+</body>
+
+</html>
